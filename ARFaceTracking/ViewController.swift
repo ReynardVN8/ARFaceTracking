@@ -16,6 +16,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var faceLabel: UILabel!
     @IBOutlet weak var labelView: UIView!
     
+    var analysis = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -65,7 +67,40 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
         if let faceAnchor = anchor as? ARFaceAnchor, let faceGeometry = node.geometry as? ARSCNFaceGeometry {
             faceGeometry.update(from: faceAnchor.geometry)
+            expression(anchor: faceAnchor)
+            
+            DispatchQueue.main.async {
+                self.faceLabel.text = self.analysis
+            }
         }
+    }
+    
+    func expression(anchor: ARFaceAnchor) {
+        
+        // eye looking down
+        let eyeLookDownLeft = anchor.blendShapes[.eyeLookDownLeft]
+        let eyeLookDownRight = anchor.blendShapes[.eyeLookDownRight]
+        
+        let eyeLookInLeft = anchor.blendShapes[.eyeLookInLeft]
+        let eyeLookInRight = anchor.blendShapes[.eyeLookInRight]
+        
+        let eyeLookOutLeft = anchor.blendShapes[.eyeLookOutLeft]
+        let eyeLookOutRight = anchor.blendShapes[.eyeLookOutRight]
+        
+        //  eye looking up
+        let eyeLookUpLeft = anchor.blendShapes[.eyeLookUpLeft]
+        let eyeLookUpRight = anchor.blendShapes[.eyeLookUpRight]
+        
+        self.analysis = ""
+        
+        if ((eyeLookDownLeft?.decimalValue ?? 0.0) + (eyeLookDownRight?.decimalValue ?? 0.0)) > 0.9 {
+            self.analysis += "You are looking down"
+        }
+        
+        if ((eyeLookUpLeft?.decimalValue ?? 0.0) + (eyeLookUpRight?.decimalValue ?? 0.0)) > 0.9 {
+            self.analysis += "You are looking up"
+        }
+        
     }
 
     
