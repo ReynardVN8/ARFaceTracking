@@ -61,6 +61,14 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         return node
     }
     
+    // Update face mesh
+    func renderer(_ renderer: SCNSceneRenderer, didUpdate node: SCNNode, for anchor: ARAnchor) {
+        if let faceAnchor = anchor as? ARFaceAnchor, let faceGeometry = node.geometry as? ARSCNFaceGeometry {
+            faceGeometry.update(from: faceAnchor.geometry)
+        }
+    }
+
+    
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
         
