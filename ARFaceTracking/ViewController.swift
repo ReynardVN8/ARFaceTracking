@@ -68,7 +68,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let faceAnchor = anchor as? ARFaceAnchor, let faceGeometry = node.geometry as? ARSCNFaceGeometry {
             faceGeometry.update(from: faceAnchor.geometry)
             expression(anchor: faceAnchor)
-//            print("\nLook at Point : \(faceAnchor.lookAtPoint)")
+            print("\nLook at Point : x:\(faceAnchor.lookAtPoint.x), y:\(faceAnchor.lookAtPoint.y), z:\(faceAnchor.lookAtPoint.z)")
             
             DispatchQueue.main.async {
                 self.faceLabel.text = self.analysis
