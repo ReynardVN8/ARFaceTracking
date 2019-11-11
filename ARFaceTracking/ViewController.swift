@@ -68,7 +68,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         if let faceAnchor = anchor as? ARFaceAnchor, let faceGeometry = node.geometry as? ARSCNFaceGeometry {
             faceGeometry.update(from: faceAnchor.geometry)
             expression(anchor: faceAnchor)
-            print("\nLook at Point : x:\(faceAnchor.lookAtPoint.x), y:\(faceAnchor.lookAtPoint.y), z:\(faceAnchor.lookAtPoint.z)")
+//            print("\nLook at Point : x:\(faceAnchor.lookAtPoint.x), y:\(faceAnchor.lookAtPoint.y), z:\(faceAnchor.lookAtPoint.z)")
             
             DispatchQueue.main.async {
                 self.faceLabel.text = self.analysis
@@ -82,9 +82,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let eyeLookDownLeft = anchor.blendShapes[.eyeLookDownLeft]
         let eyeLookDownRight = anchor.blendShapes[.eyeLookDownRight]
         
+        // eye looking towards at center
         let eyeLookInLeft = anchor.blendShapes[.eyeLookInLeft]
         let eyeLookInRight = anchor.blendShapes[.eyeLookInRight]
         
+        // eye looking outside the center
         let eyeLookOutLeft = anchor.blendShapes[.eyeLookOutLeft]
         let eyeLookOutRight = anchor.blendShapes[.eyeLookOutRight]
         
@@ -94,14 +96,19 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         self.analysis = ""
         
-        if ((eyeLookDownLeft?.decimalValue ?? 0.0) + (eyeLookDownRight?.decimalValue ?? 0.0)) > 0.9 {
+        if ((eyeLookDownLeft?.decimalValue ?? 0.0) > 0.25 && (eyeLookDownRight?.decimalValue ?? 0.0) > 0.25) {
             self.analysis += "You are looking down"
-        }
-        
-        if ((eyeLookUpLeft?.decimalValue ?? 0.0) + (eyeLookUpRight?.decimalValue ?? 0.0)) > 0.9 {
+        } else if ((eyeLookUpLeft?.decimalValue ?? 0.0) > 0.25 && (eyeLookUpRight?.decimalValue ?? 0.0) > 0.25) {
             self.analysis += "You are looking up"
+        } else if((eyeLookInLeft?.decimalValue ?? 0.0) > 0.25 && (eyeLookOutRight?.decimalValue ?? 0.0) > 0.25){
+            self.analysis += "You are looking at your left"
+        } else if((eyeLookInRight?.decimalValue ?? 0.0) > 0.25 && (eyeLookOutLeft?.decimalValue ?? 0.0) > 0.25){
+            self.analysis += "You are looking at your right"
+        } else {
+            self.analysis += "You are looking at the center"
         }
         
+        print("DL: \(eyeLookDownLeft?.decimalValue ?? 0.0) DR: \(eyeLookDownRight?.decimalValue ?? 0.0)\nUL: \(eyeLookUpLeft?.decimalValue ?? 0.0) UR: \(eyeLookUpRight?.decimalValue ?? 0.0)\nIL: \(eyeLookInLeft?.decimalValue ?? 0.0) IR: \(eyeLookInRight?.decimalValue ?? 0.0)\nOL: \(eyeLookOutLeft?.decimalValue ?? 0.0) OR: \(eyeLookOutRight?.decimalValue ?? 0.0)")
     }
 
     
